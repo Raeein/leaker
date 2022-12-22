@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+# Change to your needed gcc flags
+GCC_FLAGS="-Wall -std=c99 -ggdb3"
+
+# Dont have to change this
+EXEC="leaky"
+
+# Help output for -h, --help
 Help()
 {
    echo "Compile and run Valgrind on school server (kinda). Run this container from the root of your C project."
@@ -15,7 +22,7 @@ Help()
    echo
 }
 
-
+# Read the flags
 while getopts "m:v:h" opt; do
    case $opt in
       m) MAIN="$OPTARG";;
@@ -33,18 +40,15 @@ if [ -z "$MAIN" ]
     exit 1
 fi
 
-
 echo "Main: $MAIN"
 echo "Args: $ARGS"
 
-
-EXEC="leaky"
-
+# Double check if valgrind is installed
 command -v valgrind >/dev/null 2>&1 || { echo >&2 "Valgrind is not installed.  Aborting."; exit 1; }
 
 echo "Compiling the binary..."
 
-gcc -Wall -std=c99 -ggdb3 -o "$EXEC" "$MAIN"
+gcc $GCC_FLAGS -o "$EXEC" "$MAIN"
 COMPILED=$?
 
 if [ $COMPILED -ne 0 ]; then
